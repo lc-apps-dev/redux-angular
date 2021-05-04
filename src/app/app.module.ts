@@ -9,6 +9,8 @@ import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 import { CommonModule } from '@angular/common';
 import { LoggingService } from './logging.service';
+import { StoreModule } from '@ngrx/store';
+import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { LoggingService } from './logging.service';
     SharedModule,
     CoreModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    StoreModule.forRoot({shoppingList: shoppingListReducer})
   ],
   providers: [
     LoggingService

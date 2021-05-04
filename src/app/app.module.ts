@@ -10,7 +10,8 @@ import { CoreModule } from './core.module';
 import { CommonModule } from '@angular/common';
 import { LoggingService } from './logging.service';
 import { StoreModule } from '@ngrx/store';
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import * as fromApp from './store/app.reducer';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
     CoreModule,
     FormsModule,
     CommonModule,
-    StoreModule.forRoot({shoppingList: shoppingListReducer})
+    StoreModule.forRoot(fromApp.appReducer)
   ],
   providers: [
     LoggingService

@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
 import { LoggingService } from './logging.service';
 import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer';
-
+import { AuthEffects } from './auth/store/auth.effects';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import * as fromApp from './store/app.reducer';
     CoreModule,
     FormsModule,
     CommonModule,
-    StoreModule.forRoot(fromApp.appReducer)
+    StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([AuthEffects]),
   ],
   providers: [
     LoggingService

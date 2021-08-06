@@ -32,6 +32,7 @@ export function authRedurer(state = initialState, action: AuthActions.AuthAction
             };
 
         case AuthActions.LOGIN_START:
+        case AuthActions.SIGNUP_START:
             return {
                 ...state,
                 user : null,
@@ -47,6 +48,14 @@ export function authRedurer(state = initialState, action: AuthActions.AuthAction
                 loading: false
             };
 
+        case AuthActions.CLEAR_ERROR:
+            return {
+                ...state,
+                user : null,
+                authError: null,
+                loading: false
+            };
+            
         default:
             return state;
     }

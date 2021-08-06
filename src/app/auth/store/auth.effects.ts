@@ -5,6 +5,7 @@ import { Actions, ofType, Effect } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../auth.service';
 import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
@@ -74,6 +75,9 @@ export class AuthEffects {
                 returnSecureToken: true
             })
             .pipe(
+                tap(
+                    (resData) => {  this.authService.setLogoutTimer(+resData.expiresIn * 1000);    }
+                ),
                 map(resData => {
                     return handleAuthentication(+resData.expiresIn, resData.email, resData.localId, resData.idToken);
                 }), 
@@ -99,7 +103,9 @@ export class AuthEffects {
                     returnSecureToken: true
                 }
             ).pipe(
-                 
+                tap(
+                    (resData) => {  this.authService.setLogoutTimer(+resData.expiresIn * 1000);    }
+                ),
                 
                 map(resData => {
                     return handleAuthentication(+resData.expiresIn, resData.email, resData.localId, resData.idToken);
@@ -137,6 +143,11 @@ export class AuthEffects {
             const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
      
             if(loadedUser.token) {
+
+                const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+                this.authService.setLogoutTimer(expirationDuration);
+                
+
                 //this.userSub.next(loadedUser);
                  return new AuthActions.AuthenticateSuccess({
                      email: loadedUser.email,
@@ -155,7 +166,7 @@ export class AuthEffects {
     ))
 
     @Effect({dispatch: false})
-    authSRedirect = this.actions$.pipe(ofType(AuthActions.AUTHENTICATE_SUCCESS, AuthActions.LOGOUT), tap(() => {
+    authSRedirect = this.actions$.pipe(ofType(AuthActions.AUTHENTICATE_SUCCESS), tap(() => {
         this.router.navigate(['/']);
     }))
 
@@ -163,12 +174,15 @@ export class AuthEffects {
 
     @Effect({dispatch: false})
     authLogout = this.actions$.pipe(ofType(AuthActions.LOGOUT), tap(() => {
+        this.authService.clearLogoutTimer();
         localStorage.removeItem('userData');
+        this.router.navigate(['/auth']);
     }))
 
     constructor(private actions$: Actions,
         private http: HttpClient,
-        private router: Router) {}
+        private router: Router,
+        private authService: AuthService) {}
 
 
 }
